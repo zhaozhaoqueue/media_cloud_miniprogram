@@ -1,10 +1,13 @@
 import WxRequest from 'mina-request'
 import { getStorage } from './storage'
 import { toast } from './extendApi'
+import config from '../config'
 
+
+const API_BASE_URL = config.apiBaseUrl || ''
 
 const instance = new WxRequest({
-    baseURL: '',
+    baseURL: API_BASE_URL,
     timeout: 15000
 })
 
@@ -13,6 +16,7 @@ instance.interceptors.request = (config) => {
     const token = getStorage('token')
     if (token) {
         config.header['token'] = token
+        config.header['Authorization'] = `Bearer ${token}`
     }
     return config
 }
@@ -20,7 +24,7 @@ instance.interceptors.request = (config) => {
 instance.interceptors.response = (response) => {
     const { isSuccess, data } = response
 
-    if (!isSuccess){
+    if (!isSuccess) {
         toast({
             title: '网络异常请重试',
             icon: 'error'
@@ -28,15 +32,15 @@ instance.interceptors.response = (response) => {
         return Promise.reject(response)
     }
 
-    switch (data.code){
-        case 200:
-            return data
-        default:
-            toast({
-                title: '程序异常'
-            })
-            return Promise.reject(response)
+    const code = data?.code
+    if (code === 0 || code === 200) {
+        return data?.data ?? data
     }
+
+    toast({
+        title: data?.msg || '程序异常'
+    })
+    return Promise.reject(response)
 }
 
 

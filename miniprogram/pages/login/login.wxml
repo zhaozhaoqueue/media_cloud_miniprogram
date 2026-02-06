@@ -1,0 +1,14 @@
+<view class="page">
+  <view class="hero">
+    <view class="title">欢迎使用 Media Cloud</view>
+    <view class="subtitle">登录后即可共享空间、上传与查看图片</view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">微信一键登录</view>
+    <view class="card-desc">我们仅用于校验身份与访问权限</view>
+    <button class="primary" bindtap="handleLogin" loading="{{loading}}">
+      {{loading ? '登录中...' : '立即登录'}}
+    </button>
+  </view>
+</view>

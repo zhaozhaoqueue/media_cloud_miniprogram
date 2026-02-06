@@ -1,0 +1,105 @@
+.page {
+  min-height: 100vh;
+  background: #f5f0e8;
+  padding: 20px 18px 28px;
+}
+
+.header {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.space-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.space-meta {
+  margin-top: 6px;
+  color: #6b5e4b;
+  font-size: 12px;
+}
+
+.toolbar {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+button.primary {
+  flex: 1;
+  background: #1f1f1f;
+  color: #ffffff;
+  border-radius: 999px;
+}
+
+button.ghost {
+  flex: 1;
+  background: #ffffff;
+  color: #1f1f1f;
+  border: 1px solid #e1d9c9;
+  border-radius: 999px;
+}
+
+.grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.share-card {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.share-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.share-code {
+  font-size: 22px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.share-meta {
+  color: #6f6f6f;
+  font-size: 12px;
+}
+
+.photo {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  height: 160px;
+  background: #e8e2d6;
+}
+
+.photo-img {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-mask {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+.photo-name {
+  color: #ffffff;
+  font-size: 12px;
+}

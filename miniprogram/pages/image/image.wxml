@@ -1,0 +1,15 @@
+<view class="page">
+  <view class="hero">
+    <image class="hero-img" mode="aspectFill" src="{{image.url}}"></image>
+  </view>
+
+  <view class="info">
+    <view class="title">{{image.name}}</view>
+    <view class="meta">上传者：{{image.owner}} · {{image.date}}</view>
+  </view>
+
+  <view class="actions">
+    <button class="primary" bindtap="downloadImage">下载到本地</button>
+    <button class="ghost" bindtap="previewImage">全屏预览</button>
+  </view>
+</view>

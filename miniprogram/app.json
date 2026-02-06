@@ -1,6 +1,10 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/login/login",
+    "pages/index/index",
+    "pages/space/space",
+    "pages/upload/upload",
+    "pages/image/image"
   ],
   "window": {
     "navigationBarTextStyle": "black",
