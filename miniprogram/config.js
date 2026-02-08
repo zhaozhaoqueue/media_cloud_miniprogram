@@ -1,6 +1,6 @@
 const config = {
   env: 'dev',
-  apiBaseUrl: 'localhost:8080',
+  apiBaseUrl: 'http://localhost:8000',
   loginTimeoutMs: 8000
 }
 

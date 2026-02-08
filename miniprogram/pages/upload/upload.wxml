@@ -1,18 +1,20 @@
 <view class="page">
   <view class="header">
     <view class="title">上传图片</view>
-    <view class="subtitle">选择图片后上传到当前共享空间</view>
+    <view class="subtitle">空间 {{spaceId || '-'}} · 选择图片后上传</view>
   </view>
 
   <view class="actions">
     <button class="primary" bindtap="chooseImages">选择图片</button>
-    <button class="ghost" bindtap="startUpload" disabled="{{selected.length === 0}}">开始上传</button>
+    <button class="ghost" bindtap="startUpload" disabled="{{selectedFiles.length === 0 || uploading}}">
+      {{uploading ? '上传中...' : '开始上传'}}
+    </button>
   </view>
 
-  <view class="preview" wx:if="{{selected.length}}">
-    <view class="preview-title">已选择 {{selected.length}} 张</view>
+  <view class="preview" wx:if="{{selectedFiles.length}}">
+    <view class="preview-title">已选择 {{selectedFiles.length}} 张</view>
     <view class="preview-grid">
-      <image wx:for="{{selected}}" wx:key="index" class="preview-img" mode="aspectFill" src="{{item}}"></image>
+      <image wx:for="{{selectedFiles}}" wx:key="path" class="preview-img" mode="aspectFill" src="{{item.path}}"></image>
     </view>
   </view>
 </view>

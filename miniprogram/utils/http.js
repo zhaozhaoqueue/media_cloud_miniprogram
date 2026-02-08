@@ -1,24 +1,28 @@
 import WxRequest from 'mina-request'
 import { getStorage } from './storage'
 import { toast } from './extendApi'
-import config from '../config'
+import appConfig from '../config'
 
 
-const API_BASE_URL = config.apiBaseUrl || ''
+const API_BASE_URL = appConfig.apiBaseUrl || ''
 
 const instance = new WxRequest({
     baseURL: API_BASE_URL,
     timeout: 15000
 })
 
+instance.patch = (url, data = {}, reqConfig = {}) => {
+    return instance.request(Object.assign({ url, data, method: 'PATCH' }, reqConfig))
+}
 
-instance.interceptors.request = (config) => {
+
+instance.interceptors.request = (requestConfig) => {
+    requestConfig.header = requestConfig.header || {}
     const token = getStorage('token')
     if (token) {
-        config.header['token'] = token
-        config.header['Authorization'] = `Bearer ${token}`
+        requestConfig.header['Authorization'] = `Bearer ${token}`
     }
-    return config
+    return requestConfig
 }
 
 instance.interceptors.response = (response) => {
@@ -35,6 +39,9 @@ instance.interceptors.response = (response) => {
     const code = data?.code
     if (code === 0 || code === 200) {
         return data?.data ?? data
+    }
+    if (data?.status === 'ok') {
+        return data
     }
 
     toast({

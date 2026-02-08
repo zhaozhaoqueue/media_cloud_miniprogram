@@ -4,12 +4,19 @@
   </view>
 
   <view class="info">
-    <view class="title">{{image.name}}</view>
-    <view class="meta">上传者：{{image.owner}} · {{image.date}}</view>
+    <view class="title-row" bindtap="editImageName">
+      <view class="title">{{image.name}}</view>
+      <view class="edit-trigger">点击修改</view>
+    </view>
+    <view class="meta">上传者：{{image.ownerName}} · {{image.createdAtText}}</view>
   </view>
 
   <view class="actions">
     <button class="primary" bindtap="downloadImage">下载到本地</button>
     <button class="ghost" bindtap="previewImage">全屏预览</button>
+  </view>
+
+  <view class="danger-row">
+    <button class="danger" bindtap="deleteImage" loading="{{deleting}}">{{deleteButtonText}}</button>
   </view>
 </view>

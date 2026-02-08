@@ -12,6 +12,44 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.user-avatar-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.68);
+  flex-shrink: 0;
+}
+
+.user-avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.user-avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b5e4b;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4f442f;
+}
+
 .title {
   font-size: 28px;
   font-weight: 700;
@@ -45,17 +83,53 @@
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.card-left {
+  flex: 1;
+  min-width: 0;
 }
 
 .card-title {
   font-size: 16px;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .card-meta {
   margin-top: 6px;
   color: #6f6f6f;
   font-size: 12px;
+}
+
+.card-cover {
+  width: 68px;
+  height: 68px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f3ece0;
+  flex-shrink: 0;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+}
+
+.cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8a7d68;
+  font-size: 11px;
 }
 
 .actions {

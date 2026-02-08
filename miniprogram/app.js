@@ -1,6 +1,6 @@
 // app.js
 import { toast } from 'utils/extendApi'
-import { login, getToken } from 'utils/auth'
+import { getToken } from 'utils/auth'
 
 App({
   async onShow() {

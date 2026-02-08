@@ -1,12 +1,48 @@
+import { createSpace, getSpaces, joinSpace } from '../../api/index'
+import { toast } from '../../utils/extendApi'
+import { getStorage } from '../../utils/storage'
+
 Page({
   data: {
-    spaces: [
-      { id: 'family', name: '家庭相册', count: 126, members: 4 },
-      { id: 'team', name: '团队资料', count: 58, members: 7 },
-      { id: 'travel', name: '旅行分享', count: 214, members: 9 }
-    ],
+    spaces: [],
     showJoin: false,
-    joinCode: ''
+    joinCode: '',
+    loading: false,
+    currentUser: {
+      name: '用户',
+      avatar: '',
+      initial: '用'
+    }
+  },
+  onShow() {
+    this.loadCurrentUser()
+    this.fetchSpaces()
+  },
+  loadCurrentUser() {
+    const user = getStorage('user') || {}
+    const name = (user?.name || user?.nickname || '用户').trim() || '用户'
+    const avatar = user?.avatar || ''
+    this.setData({
+      currentUser: {
+        name,
+        avatar,
+        initial: name.slice(0, 1).toUpperCase()
+      }
+    })
+  },
+  async fetchSpaces() {
+    if (this.data.loading) return
+    this.setData({ loading: true })
+    try {
+      const data = await getSpaces({ page: 1, pageSize: 30, order: 'desc' })
+      this.setData({
+        spaces: data?.list || []
+      })
+    } catch (error) {
+      this.setData({ spaces: [] })
+    } finally {
+      this.setData({ loading: false })
+    }
   },
   goSpace(e) {
     const { id } = e.currentTarget.dataset
@@ -15,10 +51,22 @@ Page({
   createSpace() {
     wx.showModal({
       title: '创建空间',
-      content: '后端接口未接入，先进入示例空间浏览。',
-      showCancel: false,
-      success: () => {
-        wx.navigateTo({ url: '/pages/space/space?id=family' })
+      editable: true,
+      placeholderText: '输入空间名称',
+      success: async ({ confirm, content }) => {
+        if (!confirm) return
+        const name = (content || '').trim() || `新空间${Date.now().toString().slice(-4)}`
+        try {
+          const data = await createSpace({ name })
+          if (data?.id) {
+            wx.navigateTo({ url: `/pages/space/space?id=${data.id}` })
+            this.fetchSpaces()
+            return
+          }
+          toast({ title: '创建失败', icon: 'none' })
+        } catch (error) {
+          toast({ title: '创建失败', icon: 'none' })
+        }
       }
     })
   },
@@ -34,15 +82,20 @@ Page({
   onJoinInput(e) {
     this.setData({ joinCode: e.detail.value.toUpperCase() })
   },
-  confirmJoin() {
-    wx.showModal({
-      title: '加入空间',
-      content: '后端接口未接入，先进入示例空间浏览。',
-      showCancel: false,
-      success: () => {
-        this.setData({ showJoin: false, joinCode: '' })
-        wx.navigateTo({ url: '/pages/space/space?id=team' })
+  async confirmJoin() {
+    const shareCode = (this.data.joinCode || '').trim().toUpperCase()
+    if (!shareCode) return
+    try {
+      const data = await joinSpace({ shareCode })
+      this.setData({ showJoin: false, joinCode: '' })
+      if (data?.spaceId) {
+        wx.navigateTo({ url: `/pages/space/space?id=${data.spaceId}` })
+        this.fetchSpaces()
+      } else {
+        toast({ title: '加入失败', icon: 'none' })
       }
-    })
+    } catch (error) {
+      toast({ title: '分享码无效或已过期', icon: 'none' })
+    }
   }
 })

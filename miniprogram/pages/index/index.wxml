@@ -1,5 +1,12 @@
 <view class="page">
   <view class="hero">
+    <view class="user-row">
+      <view class="user-avatar-wrap">
+        <image wx:if="{{currentUser.avatar}}" class="user-avatar" mode="aspectFill" src="{{currentUser.avatar}}"></image>
+        <view wx:else class="user-avatar-fallback">{{currentUser.initial}}</view>
+      </view>
+      <view class="user-name">{{currentUser.name}}</view>
+    </view>
     <view class="title">Media Cloud</view>
     <view class="subtitle">多人共享空间 · 图片上传与查看</view>
   </view>
@@ -8,8 +15,14 @@
     <view class="section-title">我的空间</view>
     <view class="card-list">
       <view class="card" wx:for="{{spaces}}" wx:key="id" bindtap="goSpace" data-id="{{item.id}}">
-        <view class="card-title">{{item.name}}</view>
-        <view class="card-meta">{{item.count}} 张图片 · {{item.members}} 人</view>
+        <view class="card-left">
+          <view class="card-title">{{item.name}}</view>
+          <view class="card-meta">{{item.photoCount || 0}} 张图片 · {{item.memberCount || 0}} 人</view>
+        </view>
+        <view class="card-cover">
+          <image wx:if="{{item.coverUrl}}" class="cover-image" mode="aspectFill" src="{{item.coverUrl}}"></image>
+          <view wx:else class="cover-fallback">暂无封面</view>
+        </view>
       </view>
     </view>
   </view>
