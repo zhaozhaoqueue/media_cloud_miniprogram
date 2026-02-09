@@ -1,6 +1,6 @@
 const config = {
   env: 'dev',
-  apiBaseUrl: 'http://localhost:8000',
+  apiBaseUrl: 'https://media.weloverhea.top',
   loginTimeoutMs: 8000
 }
 
