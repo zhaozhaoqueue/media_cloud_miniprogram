@@ -6,8 +6,8 @@
 
   <view class="card">
     <view class="card-title">微信一键登录</view>
-    <view class="card-desc">点击登录后会询问是否授权昵称和头像（可跳过）</view>
-    <button class="primary" bindtap="handleLogin" loading="{{loading}}">
+    <view class="card-desc">点击登录后，系统会先校验账号；未注册用户会进入注册页</view>
+    <button class="primary" bindtap="handleLogin" loading="{{loading}}" disabled="{{loading}}">
       {{loading ? '登录中...' : '立即登录'}}
     </button>
   </view>

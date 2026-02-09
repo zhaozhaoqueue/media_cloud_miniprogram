@@ -3,6 +3,7 @@ import http from '../utils/http'
 export const getHealth = () => http.get('/api/v1/health')
 
 export const authLogin = (data) => http.post('/api/v1/auth/login', data)
+export const authRegister = (data) => http.post('/api/v1/auth/register', data)
 
 export const getSpaces = (params = {}) => http.get('/api/v1/spaces', params)
 export const createSpace = (data) => http.post('/api/v1/spaces', data)
