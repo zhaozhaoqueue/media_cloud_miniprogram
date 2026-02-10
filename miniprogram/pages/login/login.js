@@ -3,7 +3,8 @@ import { toast } from '../../utils/extendApi'
 
 Page({
   data: {
-    loading: false
+    loading: false,
+    inviteCode: ''
   },
   onShow() {
     const token = getToken()
@@ -11,21 +12,19 @@ Page({
       wx.reLaunch({ url: '/pages/index/index' })
     }
   },
+  onInviteCodeInput(e) {
+    this.setData({
+      inviteCode: (e?.detail?.value || '').trim().toUpperCase()
+    })
+  },
   async handleLogin() {
     if (this.data.loading) return
 
     this.setData({ loading: true })
     try {
-      const result = await login()
-      if (result?.needRegister) {
-        const code = encodeURIComponent(result?.wxCode || '')
-        const ticket = encodeURIComponent(result?.registerTicket || '')
-        wx.navigateTo({
-          url: `/pages/register/register?code=${code}&ticket=${ticket}`
-        })
-        return
-      }
-
+      await login({
+        inviteCode: this.data.inviteCode
+      })
       wx.reLaunch({ url: '/pages/index/index' })
     } catch (error) {
       toast({

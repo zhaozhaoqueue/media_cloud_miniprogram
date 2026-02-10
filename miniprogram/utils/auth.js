@@ -130,72 +130,27 @@ const persistSession = (payload = {}, profileFallback = {}) => {
   }
 }
 
-export const login = async () => {
+export const login = async (payload = {}) => {
   const wxCode = await requestWxLoginCode()
-  const result = await postAuth('/api/v1/auth/login', {
+  const inviteCode = String(payload?.inviteCode || '').trim().toUpperCase()
+  const loginPayload = {
     provider: AUTH_PROVIDER,
     code: wxCode
-  })
+  }
+  if (inviteCode) {
+    loginPayload.inviteCode = inviteCode
+  }
 
-  if (result.ok) {
+  const result = await postAuth('/api/v1/auth/login', loginPayload)
+
+  if (result?.ok) {
     const data = result?.data || {}
-    if (data?.needRegister === true || data?.registered === false) {
-      return {
-        needRegister: true,
-        wxCode,
-        registerTicket: data?.registerTicket || data?.ticket || ''
-      }
-    }
     persistSession(data)
     return {
-      needRegister: false,
       token: data?.token,
       user: data?.user || {}
     }
   }
 
-  if (result?.httpStatus === 404) {
-    return {
-      needRegister: true,
-      wxCode,
-      registerTicket: ''
-    }
-  }
-
   throw createError(result?.msg || '登录失败，请重试', result?.code || result?.httpStatus, result?.data)
-}
-
-export const register = async (payload = {}) => {
-  const wxCode = String(payload?.wxCode || '').trim()
-  const registerTicket = String(payload?.registerTicket || '').trim()
-  const nickname = String(payload?.nickname || '').trim()
-  const avatar = String(payload?.avatar || '').trim()
-  const accessCode = String(payload?.accessCode || '').trim()
-
-  if (!wxCode) {
-    throw createError('登录态已过期，请返回重新登录')
-  }
-  if (!nickname || !avatar || !accessCode) {
-    throw createError('请完整填写头像、昵称和 accessCode')
-  }
-
-  const registerPayload = {
-    provider: AUTH_PROVIDER,
-    code: wxCode,
-    nickname,
-    avatar,
-    accessCode
-  }
-  if (registerTicket) {
-    registerPayload.registerTicket = registerTicket
-  }
-
-  const result = await postAuth('/api/v1/auth/register', registerPayload)
-  if (!result?.ok) {
-    throw createError(result?.msg || '注册失败，请重试', result?.code || result?.httpStatus, result?.data)
-  }
-
-  const data = result?.data || {}
-  persistSession(data, { nickname, avatar })
-  return data
 }

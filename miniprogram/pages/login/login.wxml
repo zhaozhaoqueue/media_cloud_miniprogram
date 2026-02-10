@@ -6,7 +6,15 @@
 
   <view class="card">
     <view class="card-title">微信一键登录</view>
-    <view class="card-desc">点击登录后，系统会先校验账号；未注册用户会进入注册页</view>
+    <view class="card-desc">点击登录后将直接进入主页，邀请码用于内测资格校验</view>
+    <input
+      class="invite-input"
+      type="text"
+      maxlength="16"
+      placeholder="请输入邀请码（可选）"
+      value="{{inviteCode}}"
+      bindinput="onInviteCodeInput"
+    />
     <button class="primary" bindtap="handleLogin" loading="{{loading}}" disabled="{{loading}}">
       {{loading ? '登录中...' : '立即登录'}}
     </button>
