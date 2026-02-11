@@ -28,7 +28,7 @@ Page({
   chooseImages() {
     wx.chooseImage({
       count: 9,
-      sizeType: ['compressed'],
+      sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFiles = (res.tempFiles || []).map((file) => {
