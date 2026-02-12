@@ -6,9 +6,6 @@
         <view wx:else class="user-avatar-fallback">{{currentUser.initial}}</view>
       </view>
       <view class="user-name">{{currentUser.name}}</view>
-      <button class="profile-sync-btn" size="mini" bindtap="syncWechatProfile" loading="{{syncingProfile}}" disabled="{{syncingProfile}}">
-        {{syncingProfile ? '更新中' : '使用微信资料'}}
-      </button>
     </view>
     <view class="title">Media Cloud</view>
     <view class="subtitle">多人共享空间 · 图片上传与查看</view>

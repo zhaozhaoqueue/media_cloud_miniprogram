@@ -51,18 +51,6 @@
   flex: 1;
 }
 
-.profile-sync-btn {
-  margin: 0;
-  height: 30px;
-  line-height: 30px;
-  font-size: 11px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #4f442f;
-  border: 1px solid #e1d9c9;
-}
-
 .title {
   font-size: 28px;
   font-weight: 700;

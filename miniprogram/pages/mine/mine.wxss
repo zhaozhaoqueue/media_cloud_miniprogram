@@ -1,0 +1,88 @@
+.page {
+  min-height: 100vh;
+  background: #f7f3eb;
+  padding: 18px;
+}
+
+.profile-card,
+.form-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.form-card {
+  margin-top: 14px;
+}
+
+.avatar-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f0e6d2;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b5e4b;
+  font-weight: 700;
+  font-size: 24px;
+}
+
+.name {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1f1f1f;
+}
+
+.tip {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #7f6f57;
+}
+
+.label {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #5e523d;
+}
+
+.label:first-child {
+  margin-top: 0;
+}
+
+.input {
+  margin-top: 8px;
+  height: 42px;
+  border-radius: 12px;
+  background: #f5f0e8;
+  padding: 0 12px;
+  font-size: 14px;
+}
+
+button.ghost {
+  margin-top: 16px;
+  background: #ffffff;
+  color: #1f1f1f;
+  border-radius: 999px;
+  border: 1px solid #e1d9c9;
+}
+
+button.primary {
+  margin-top: 12px;
+  background: #1f1f1f;
+  color: #ffffff;
+  border-radius: 999px;
+}

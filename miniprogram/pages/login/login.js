@@ -9,7 +9,7 @@ Page({
   onShow() {
     const token = getToken()
     if (token) {
-      wx.reLaunch({ url: '/pages/index/index' })
+      wx.switchTab({ url: '/pages/index/index' })
     }
   },
   onInviteCodeInput(e) {
@@ -25,7 +25,7 @@ Page({
       await login({
         inviteCode: this.data.inviteCode
       })
-      wx.reLaunch({ url: '/pages/index/index' })
+      wx.switchTab({ url: '/pages/index/index' })
     } catch (error) {
       toast({
         title: error?.message || '登录失败，请重试',

@@ -1,0 +1,6 @@
+<view class="page">
+  <view class="card">
+    <view class="title">广场页面</view>
+    <view class="desc">这是默认占位页，后续可以放推荐内容、热门共享空间等能力。</view>
+  </view>
+</view>
