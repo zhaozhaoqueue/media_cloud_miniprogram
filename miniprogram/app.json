@@ -9,7 +9,7 @@
     "pages/image/image"
   ],
   "tabBar": {
-    "position": "top",
+    "position": "bottom",
     "color": "#7f6f57",
     "selectedColor": "#1f1f1f",
     "backgroundColor": "#f7f3eb",
@@ -17,11 +17,11 @@
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "空间"
       },
       {
         "pagePath": "pages/discover/discover",
-        "text": "广场"
+        "text": "笔记"
       },
       {
         "pagePath": "pages/mine/mine",

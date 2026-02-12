@@ -1,34 +1,15 @@
 import { createSpace, getSpaces, joinSpace } from '../../api/index'
 import { toast } from '../../utils/extendApi'
-import { getStorage } from '../../utils/storage'
 
 Page({
   data: {
     spaces: [],
     showJoin: false,
     joinCode: '',
-    loading: false,
-    currentUser: {
-      name: '用户',
-      avatar: '',
-      initial: '用'
-    }
+    loading: false
   },
   onShow() {
-    this.loadCurrentUser()
     this.fetchSpaces()
-  },
-  loadCurrentUser() {
-    const user = getStorage('user') || {}
-    const name = (user?.name || user?.nickname || '用户').trim() || '用户'
-    const avatar = user?.avatar || ''
-    this.setData({
-      currentUser: {
-        name,
-        avatar,
-        initial: name.slice(0, 1).toUpperCase()
-      }
-    })
   },
   async fetchSpaces() {
     if (this.data.loading) return

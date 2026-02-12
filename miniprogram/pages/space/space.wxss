@@ -1,14 +1,15 @@
 .page {
   min-height: 100vh;
-  background: #f5f0e8;
-  padding: 20px 18px 28px;
+  background: #f7f3eb;
+  color: #1f1f1f;
+  padding: 24px 18px 32px;
 }
 
 .header {
-  background: #ffffff;
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  background: radial-gradient(circle at 20% 20%, #fff6df 0%, #f0e4cf 45%, #e4d2b1 100%);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .space-title-row {
@@ -30,8 +31,9 @@
 
 .edit-name-trigger {
   font-size: 12px;
-  color: #8a7d68;
-  border: 1px solid #e1d9c9;
+  color: #6b5e4b;
+  border: 1px solid #d9c8ac;
+  background: rgba(255, 255, 255, 0.56);
   border-radius: 999px;
   padding: 3px 10px;
   flex-shrink: 0;
@@ -39,7 +41,7 @@
 
 .space-meta {
   margin-top: 6px;
-  color: #6b5e4b;
+  color: #5e523d;
   font-size: 12px;
 }
 

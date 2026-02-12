@@ -5,6 +5,21 @@ export const getHealth = () => http.get('/api/v1/health')
 export const authLogin = (data) => http.post('/api/v1/auth/login', data)
 export const updateMyProfile = (data) => http.patch('/api/v1/users/me', data)
 
+export const getNotes = (params = {}) => http.get('/api/v1/notes', params)
+export const createNote = (data) => http.post('/api/v1/notes', data)
+export const getNote = (noteId) => http.get(`/api/v1/notes/${noteId}`)
+export const updateNote = (noteId, data) => http.patch(`/api/v1/notes/${noteId}`, data)
+export const deleteNote = (noteId) => http.delete(`/api/v1/notes/${noteId}`)
+export const createNoteShareCode = (noteId, data) => http.post(`/api/v1/notes/${noteId}/share-code`, data)
+export const joinNote = (data) => http.post('/api/v1/notes/join', data)
+
+export const getNoteItems = (noteId, params = {}) => http.get(`/api/v1/notes/${noteId}/items`, params)
+export const createNoteItem = (noteId, data) => http.post(`/api/v1/notes/${noteId}/items`, data)
+export const getNoteItem = (noteId, itemId) => http.get(`/api/v1/notes/${noteId}/items/${itemId}`)
+export const updateNoteItem = (noteId, itemId, data) =>
+  http.patch(`/api/v1/notes/${noteId}/items/${itemId}`, data)
+export const deleteNoteItem = (noteId, itemId) => http.delete(`/api/v1/notes/${noteId}/items/${itemId}`)
+
 export const getSpaces = (params = {}) => http.get('/api/v1/spaces', params)
 export const createSpace = (data) => http.post('/api/v1/spaces', data)
 export const joinSpace = (data) => http.post('/api/v1/spaces/join', data)
