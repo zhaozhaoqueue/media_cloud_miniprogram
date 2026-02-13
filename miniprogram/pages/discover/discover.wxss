@@ -8,25 +8,26 @@
 .hero {
   background: radial-gradient(circle at 20% 20%, #fff6df 0%, #f0e4cf 45%, #e4d2b1 100%);
   border-radius: 20px;
-  padding: 22px;
+  padding: 18px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
 .title {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
+  letter-spacing: 0.2px;
   color: #1f1f1f;
 }
 
 .desc {
-  margin-top: 10px;
-  font-size: 14px;
+  margin-top: 4px;
+  font-size: 13px;
   color: #5e523d;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .hero-actions {
-  margin-top: 16px;
+  margin-top: 10px;
   display: flex;
   gap: 12px;
 }
@@ -48,21 +49,43 @@ button.ghost {
   border: 1px solid #e1d9c9;
 }
 
-.note-tabs {
+.note-tabs-row {
   margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.note-create-btn {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1f1f1f;
+  color: #ffffff;
+  border-radius: 12px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.note-tabs {
+  flex: 1;
   white-space: nowrap;
 }
 
 .note-tab {
+  position: relative;
   display: inline-flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 120px;
+  min-width: 136px;
   margin-right: 10px;
   background: #ffffff;
   border: 1px solid #ebdfcc;
   border-radius: 14px;
-  padding: 10px 12px;
+  padding: 10px 12px 10px;
 }
 
 .note-tab-active {
@@ -70,10 +93,25 @@ button.ghost {
   border-color: #d8c09f;
 }
 
+.note-tab-delete {
+  position: absolute;
+  right: 8px;
+  top: 6px;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 50%;
+  color: #c15b4f;
+  border: 1px solid #edc6be;
+  font-size: 13px;
+}
+
 .note-tab-title {
   font-size: 14px;
   font-weight: 600;
   color: #1f1f1f;
+  padding-right: 20px;
 }
 
 .note-tab-meta {
@@ -89,25 +127,10 @@ button.ghost {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
 }
 
-.list-head {
+.list-toolbar {
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.list-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 16px;
-  font-weight: 700;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.list-count {
-  font-size: 12px;
-  color: #6f6f6f;
+  justify-content: flex-end;
+  margin-bottom: 8px;
 }
 
 .add-btn {
@@ -180,6 +203,11 @@ button.ghost {
   font-size: 12px;
 }
 
+.notes-empty {
+  margin-top: 12px;
+  min-height: 240px;
+}
+
 .popup-mask {
   position: fixed;
   left: 0;
@@ -212,6 +240,17 @@ button.ghost {
   margin-top: 6px;
   font-size: 13px;
   color: #6f6f6f;
+}
+
+.popup-input {
+  margin-top: 12px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #e1d9c9;
+  background: #fbf8f2;
+  padding: 0 12px;
+  font-size: 14px;
+  color: #1f1f1f;
 }
 
 .popup-code {

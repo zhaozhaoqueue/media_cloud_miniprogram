@@ -1,56 +1,61 @@
 <view class="page">
   <view class="hero">
     <view class="title">共享笔记</view>
-    <view class="desc">假数据演示：多笔记、行级编辑、按月份分组、懒加载、分享码</view>
+    <view class="desc">多人协作笔记 · 支持分享码加入</view>
     <view class="hero-actions">
-      <button class="ghost" bindtap="onCreateNote">新建笔记</button>
       <button class="primary" bindtap="onGenerateShareCode">生成分享码</button>
+      <button class="ghost" bindtap="onJoinNote">加入笔记</button>
     </view>
   </view>
 
-  <scroll-view class="note-tabs" scroll-x enable-flex>
-    <view
-      class="note-tab {{activeNoteId === item.id ? 'note-tab-active' : ''}}"
-      wx:for="{{notes}}"
-      wx:key="id"
-      data-id="{{item.id}}"
-      bindtap="onSelectNote"
-    >
-      <view class="note-tab-title">{{item.title}}</view>
-      <view class="note-tab-meta">{{item.lineTotal}} 条</view>
-    </view>
-  </scroll-view>
-
-  <view class="list-card">
-    <view class="list-head">
-      <view class="list-title">{{activeNoteTitle || '未选择笔记'}}</view>
-      <view class="list-count">{{activeNoteLineTotal}} 条记录</view>
-      <view class="add-btn" bindtap="onAddLine">+</view>
-    </view>
-
-    <view class="empty" wx:if="{{!lineSections.length}}">暂无记录，点击右上角 + 添加</view>
-
-    <block wx:for="{{lineSections}}" wx:key="monthKey">
-      <view class="month-title">{{item.monthLabel}}</view>
+  <view class="note-tabs-row">
+    <view class="note-create-btn" bindtap="onCreateNote">+</view>
+    <scroll-view class="note-tabs" scroll-x enable-flex>
       <view
-        class="line-item"
-        wx:for="{{item.items}}"
+        class="note-tab {{activeNoteId === item.id ? 'note-tab-active' : ''}}"
+        wx:for="{{notes}}"
         wx:key="id"
         data-id="{{item.id}}"
-        bindtap="onEditLine"
+        bindtap="onSelectNote"
       >
-        <view class="line-main">
-          <view class="line-content">{{item.content}}</view>
-          <view class="line-time">{{item.updatedByName}} 更新于 {{item.updatedText}}</view>
-        </view>
-        <view class="line-delete" data-id="{{item.id}}" catchtap="onDeleteLine">×</view>
+        <view class="note-tab-delete" data-id="{{item.id}}" catchtap="onDeleteNote">×</view>
+        <view class="note-tab-title">{{item.title}}</view>
+        <view class="note-tab-meta">{{item.lineTotal}} 条</view>
       </view>
-    </block>
+    </scroll-view>
   </view>
 
-  <view class="list-status" wx:if="{{loadingMore}}">正在加载更多...</view>
-  <view class="list-status" wx:if="{{!loadingMore && hasMore}}">继续下滑加载更多</view>
-  <view class="list-status" wx:if="{{!loadingMore && !hasMore && lineSections.length}}">已加载全部记录</view>
+  <block wx:if="{{notes.length > 0}}">
+    <view class="list-card">
+      <view class="list-toolbar">
+        <view class="add-btn" bindtap="onAddLine">+</view>
+      </view>
+
+      <view class="empty" wx:if="{{!lineSections.length}}">暂无记录</view>
+
+      <block wx:for="{{lineSections}}" wx:key="monthKey">
+        <view class="month-title">{{item.monthLabel}}</view>
+        <view
+          class="line-item"
+          wx:for="{{item.items}}"
+          wx:key="id"
+          data-id="{{item.id}}"
+          bindtap="onEditLine"
+        >
+          <view class="line-main">
+            <view class="line-content">{{item.content}}</view>
+            <view class="line-time">{{item.updatedByName}} 更新于 {{item.updatedText}}</view>
+          </view>
+          <view class="line-delete" data-id="{{item.id}}" catchtap="onDeleteLine">×</view>
+        </view>
+      </block>
+    </view>
+
+    <view class="list-status" wx:if="{{loadingMore}}">正在加载更多...</view>
+    <view class="list-status" wx:if="{{!loadingMore && hasMore}}">继续下滑加载更多</view>
+    <view class="list-status" wx:if="{{!loadingMore && !hasMore && lineSections.length}}">已加载全部记录</view>
+  </block>
+  <view wx:else class="notes-empty"></view>
 
   <view class="popup-mask" wx:if="{{showSharePopup}}" bindtap="onCloseSharePopup">
     <view class="popup-card" catchtap="onPopupTap">
@@ -61,6 +66,26 @@
       <view class="popup-actions">
         <button class="ghost" bindtap="onCloseSharePopup">关闭</button>
         <button class="primary" bindtap="onCopyShareCode">复制</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="popup-mask" wx:if="{{showJoinPopup}}" bindtap="onCloseJoinPopup">
+    <view class="popup-card" catchtap="onPopupTap">
+      <view class="popup-title">加入笔记</view>
+      <view class="popup-note">输入邀请码后加入共享笔记</view>
+      <input
+        class="popup-input"
+        maxlength="12"
+        placeholder="请输入邀请码"
+        value="{{joinCode}}"
+        bindinput="onJoinCodeInput"
+      />
+      <view class="popup-actions">
+        <button class="ghost" bindtap="onCloseJoinPopup" disabled="{{joiningNote}}">关闭</button>
+        <button class="primary" bindtap="onConfirmJoinNote" loading="{{joiningNote}}" disabled="{{joiningNote || !joinCode}}">
+          {{joiningNote ? '加入中...' : '确认加入'}}
+        </button>
       </view>
     </view>
   </view>

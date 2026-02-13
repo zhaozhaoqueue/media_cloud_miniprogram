@@ -1,13 +1,34 @@
 <view class="page">
   <view class="hero">
-    <view class="title">Media Cloud</view>
-    <view class="subtitle">多人共享空间 · 图片上传与查看</view>
+    <view class="title">共享空间</view>
+    <view class="subtitle">多人协作空间 · 支持分享码加入</view>
+    <view class="hero-actions">
+      <button class="primary" bindtap="createSpace">创建空间</button>
+      <button class="ghost" bindtap="toggleJoin">加入空间</button>
+    </view>
+
+    <view class="join-panel" wx:if="{{showJoin}}">
+      <view class="join-title">输入分享码</view>
+      <input class="join-input" placeholder="例如 ABC123" maxlength="10" value="{{joinCode}}" bindinput="onJoinInput" />
+      <view class="join-actions">
+        <button class="ghost" bindtap="toggleJoin">取消</button>
+        <button class="primary" bindtap="confirmJoin" disabled="{{!joinCode}}">加入</button>
+      </view>
+    </view>
   </view>
 
   <view class="section">
     <view class="section-title">我的空间</view>
     <view class="card-list">
       <view class="card" wx:for="{{spaces}}" wx:key="id" bindtap="goSpace" data-id="{{item.id}}">
+        <view
+          class="space-delete {{item.canDelete ? '' : 'space-delete-disabled'}}"
+          data-id="{{item.id}}"
+          data-can-delete="{{item.canDelete}}"
+          catchtap="onDeleteSpace"
+        >
+          {{deletingSpaceId === item.id ? '…' : '×'}}
+        </view>
         <view class="card-left">
           <view class="card-title">{{item.name}}</view>
           <view class="card-meta">{{item.photoCount || 0}} 张图片 · {{item.memberCount || 0}} 人</view>
@@ -17,20 +38,6 @@
           <view wx:else class="cover-fallback">暂无封面</view>
         </view>
       </view>
-    </view>
-  </view>
-
-  <view class="actions">
-    <button class="primary" bindtap="createSpace">创建共享空间</button>
-    <button class="ghost" bindtap="toggleJoin">加入共享空间</button>
-  </view>
-
-  <view class="join-panel" wx:if="{{showJoin}}">
-    <view class="join-title">输入分享码</view>
-    <input class="join-input" placeholder="例如 ABC123" maxlength="10" value="{{joinCode}}" bindinput="onJoinInput" />
-    <view class="join-actions">
-      <button class="ghost" bindtap="toggleJoin">取消</button>
-      <button class="primary" bindtap="confirmJoin" disabled="{{!joinCode}}">加入</button>
     </view>
   </view>
 </view>

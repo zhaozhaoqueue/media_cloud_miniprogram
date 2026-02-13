@@ -12,13 +12,6 @@
     <button class="ghost" bindtap="shareSpace">生成分享码</button>
   </view>
 
-  <view class="share-card" wx:if="{{shareCode}}">
-    <view class="share-title">空间分享码</view>
-    <view class="share-code">{{shareCode}}</view>
-    <view class="share-meta">有效期 {{shareExpireText}}</view>
-    <button class="ghost" bindtap="copyShareCode">复制分享码</button>
-  </view>
-
   <view class="grid">
     <view class="photo" wx:for="{{photos}}" wx:key="id" bindtap="openImage" data-id="{{item.id}}">
       <image class="photo-img" mode="aspectFill" src="{{item.displayUrl}}"></image>
@@ -32,5 +25,18 @@
   <view class="list-status" wx:if="{{loadingMorePhotos}}">正在加载更多...</view>
   <view class="list-status" wx:if="{{showNoMoreState}}">
     没有更多图片了
+  </view>
+
+  <view class="popup-mask" wx:if="{{showSharePopup}}" bindtap="onCloseSharePopup">
+    <view class="popup-card" catchtap="onPopupTap">
+      <view class="popup-title">空间分享码</view>
+      <view class="popup-note">{{spaceName}}</view>
+      <view class="popup-code">{{shareCode}}</view>
+      <view class="popup-expire">有效期至 {{shareExpireText}}</view>
+      <view class="popup-actions">
+        <button class="ghost" bindtap="onCloseSharePopup">关闭</button>
+        <button class="primary" bindtap="copyShareCode">复制</button>
+      </view>
+    </view>
   </view>
 </view>

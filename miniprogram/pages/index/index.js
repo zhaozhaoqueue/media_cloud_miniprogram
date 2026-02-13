@@ -1,12 +1,24 @@
-import { createSpace, getSpaces, joinSpace } from '../../api/index'
+import { createSpace, deleteSpace, getSpaces, joinSpace } from '../../api/index'
 import { toast } from '../../utils/extendApi'
+
+const mapSpacePermission = (space = {}) => {
+  const role = String(space?.myRole || space?.role || '').trim().toLowerCase()
+  const explicitCanDelete = space?.canDelete
+  const canDelete = typeof explicitCanDelete === 'boolean' ? explicitCanDelete : (role ? role === 'owner' : true)
+  return {
+    ...space,
+    role,
+    canDelete
+  }
+}
 
 Page({
   data: {
     spaces: [],
     showJoin: false,
     joinCode: '',
-    loading: false
+    loading: false,
+    deletingSpaceId: ''
   },
   onShow() {
     this.fetchSpaces()
@@ -16,8 +28,9 @@ Page({
     this.setData({ loading: true })
     try {
       const data = await getSpaces({ page: 1, pageSize: 30, order: 'desc' })
+      const spaces = (data?.list || []).map(mapSpacePermission)
       this.setData({
-        spaces: data?.list || []
+        spaces
       })
     } catch (error) {
       this.setData({ spaces: [] })
@@ -78,5 +91,31 @@ Page({
     } catch (error) {
       toast({ title: '分享码无效或已过期', icon: 'none' })
     }
+  },
+  onDeleteSpace(e) {
+    const spaceId = String(e.currentTarget.dataset.id || '').trim()
+    const canDelete = e.currentTarget.dataset.canDelete !== false
+    if (!spaceId || this.data.deletingSpaceId) return
+    if (!canDelete) {
+      toast({ title: '仅空间所有者可删除', icon: 'none' })
+      return
+    }
+    wx.showModal({
+      title: '删除空间',
+      content: '确认删除该空间吗？空间下的全部图片会被一并删除。',
+      success: async ({ confirm }) => {
+        if (!confirm) return
+        this.setData({ deletingSpaceId: spaceId })
+        try {
+          await deleteSpace(spaceId)
+          toast({ title: '空间已删除', icon: 'success' })
+          this.fetchSpaces()
+        } catch (error) {
+          toast({ title: '删除失败，请重试', icon: 'none' })
+        } finally {
+          this.setData({ deletingSpaceId: '' })
+        }
+      }
+    })
   }
 })

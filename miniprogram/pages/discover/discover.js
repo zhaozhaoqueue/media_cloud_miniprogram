@@ -2,9 +2,11 @@ import {
   createNote,
   createNoteItem,
   createNoteShareCode,
+  deleteNote,
   deleteNoteItem,
   getNoteItems,
   getNotes,
+  joinNote,
   updateNoteItem
 } from '../../api/index'
 import { toast } from '../../utils/extendApi'
@@ -133,6 +135,9 @@ Page({
     shareExpireText: '',
     shareNoteTitle: '',
     showSharePopup: false,
+    showJoinPopup: false,
+    joinCode: '',
+    joiningNote: false,
     loadingNotes: false,
     loadingMore: false,
     hasMore: false
@@ -196,7 +201,10 @@ Page({
       lineSections: [],
       hasMore: false,
       loadingMore: false,
-      showSharePopup: false
+      showSharePopup: false,
+      showJoinPopup: false,
+      joinCode: '',
+      joiningNote: false
     })
   },
   async loadMoreLines(reset = false) {
@@ -270,6 +278,78 @@ Page({
           toast({ title: '笔记已创建', icon: 'success' })
         } catch (error) {
           toast({ title: '创建笔记失败', icon: 'none' })
+        }
+      }
+    })
+  },
+  onJoinNote() {
+    this.setData({
+      showJoinPopup: true,
+      joinCode: '',
+      joiningNote: false
+    })
+  },
+  onJoinCodeInput(e) {
+    this.setData({
+      joinCode: String(e?.detail?.value || '').trim().toUpperCase()
+    })
+  },
+  onCloseJoinPopup() {
+    if (this.data.joiningNote) return
+    this.setData({
+      showJoinPopup: false,
+      joinCode: ''
+    })
+  },
+  async onConfirmJoinNote() {
+    if (this.data.joiningNote) return
+    const shareCode = String(this.data.joinCode || '').trim().toUpperCase()
+    if (!shareCode) {
+      toast({ title: '请输入邀请码', icon: 'none' })
+      return
+    }
+    this.setData({ joiningNote: true })
+    try {
+      const data = await joinNote({ shareCode })
+      const joinedNoteId = String(data?.noteId || '').trim()
+      const activeNoteId = await this.fetchNotes(joinedNoteId)
+      this.clearItems()
+      if (activeNoteId) {
+        await this.loadMoreLines(true)
+      }
+      this.setData({
+        showJoinPopup: false,
+        joinCode: ''
+      })
+      toast({ title: '加入成功', icon: 'success' })
+    } catch (error) {
+      toast({ title: '邀请码无效或已过期', icon: 'none' })
+    } finally {
+      this.setData({ joiningNote: false })
+    }
+  },
+  onDeleteNote(e) {
+    const noteId = String(e.currentTarget.dataset.id || '').trim()
+    if (!noteId) return
+    wx.showModal({
+      title: '删除笔记',
+      content: '确认删除该笔记吗？删除后不可恢复。',
+      success: async ({ confirm }) => {
+        if (!confirm) return
+        const deletingActive = noteId === this.data.activeNoteId
+        try {
+          await deleteNote(noteId)
+          const preferredNoteId = deletingActive ? '' : this.data.activeNoteId
+          const activeNoteId = await this.fetchNotes(preferredNoteId)
+          if (!activeNoteId) {
+            this.clearItems()
+          } else if (deletingActive) {
+            this.clearItems()
+            await this.loadMoreLines(true)
+          }
+          toast({ title: '笔记已删除', icon: 'success' })
+        } catch (error) {
+          toast({ title: '删除笔记失败', icon: 'none' })
         }
       }
     })

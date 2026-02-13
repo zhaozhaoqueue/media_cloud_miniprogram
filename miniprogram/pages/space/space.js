@@ -12,6 +12,7 @@ Page({
     photos: [],
     shareCode: '',
     shareExpireText: '',
+    showSharePopup: false,
     loading: false,
     renaming: false,
     photosPage: 1,
@@ -123,13 +124,15 @@ Page({
     try {
       const data = await createShareCode(spaceId, { expiresIn: 86400 })
       const expireText = this.formatDateTime(data?.expireAt)
+      const shareCode = String(data?.shareCode || '').trim()
+      if (!shareCode) {
+        toast({ title: '生成分享码失败', icon: 'none' })
+        return
+      }
       this.setData({
-        shareCode: data?.shareCode || '',
-        shareExpireText: expireText
-      })
-      wx.showToast({
-        title: '分享码已生成',
-        icon: 'success'
+        shareCode,
+        shareExpireText: expireText,
+        showSharePopup: true
       })
     } catch (error) {
       toast({ title: '生成分享码失败', icon: 'none' })
@@ -147,8 +150,15 @@ Page({
   copyShareCode() {
     if (!this.data.shareCode) return
     wx.setClipboardData({
-      data: this.data.shareCode
+      data: this.data.shareCode,
+      success: () => {
+        toast({ title: '分享码已复制', icon: 'success' })
+      }
     })
+  },
+  onPopupTap() {},
+  onCloseSharePopup() {
+    this.setData({ showSharePopup: false })
   },
   editSpaceName() {
     const { spaceId, spaceName, renaming } = this.data

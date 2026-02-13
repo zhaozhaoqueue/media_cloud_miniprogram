@@ -20,6 +20,7 @@ Page({
   data: {
     saving: false,
     hasPendingAvatar: false,
+    lastAvatarFileId: '',
     loggingOut: false,
     currentUser: {
       id: '',
@@ -112,15 +113,12 @@ Page({
     if (!avatarPath) {
       return {}
     }
-    if (/^https?:\/\//i.test(avatarPath)) {
-      return {
-        avatar: avatarPath
-      }
-    }
-
     const name = fileNameFromPath(avatarPath)
     const mimeType = inferMimeType(avatarPath)
     const size = await this.getFileSize(avatarPath)
+    if (size <= 0) {
+      throw new Error('头像文件无效，请重新选择')
+    }
     const tokenData = await getMyAvatarUploadToken({
       name,
       type: mimeType,
@@ -131,6 +129,7 @@ Page({
       throw new Error('头像上传凭证无效')
     }
     await this.uploadBySignedUrl(avatarPath, uploadInfo)
+    this.setData({ lastAvatarFileId: uploadInfo.fileId })
     return {
       avatarFileId: uploadInfo.fileId,
       avatar: uploadInfo.finalUrl || ''
@@ -160,22 +159,31 @@ Page({
       if (avatarPayload.avatarFileId) {
         payload.avatarFileId = avatarPayload.avatarFileId
       }
-      if (avatarPayload.avatar && !payload.avatarFileId) {
-        payload.avatar = avatarPayload.avatar
+      if (hasAvatarChange && !payload.avatarFileId) {
+        throw new Error('头像上传失败，请重试')
       }
 
       const data = await updateMyProfile(payload)
       const responseUser = data?.user || data || {}
+      const nextAvatarFileId =
+        responseUser?.avatarFileId ||
+        payload?.avatarFileId ||
+        oldUser?.avatarFileId ||
+        ''
       const merged = {
         ...oldUser,
         ...responseUser,
         id: responseUser?.id || oldUser?.id || '',
         name: responseUser?.name || nextName || oldUser?.name || oldUser?.nickname || '用户',
         nickname: responseUser?.name || nextName || oldUser?.nickname || '用户',
-        avatar: responseUser?.avatar || avatarPayload?.avatar || oldUser?.avatar || ''
+        avatar: responseUser?.avatar || avatarPayload?.avatar || oldUser?.avatar || '',
+        avatarFileId: nextAvatarFileId
       }
       setStorage('user', merged)
-      this.setData({ hasPendingAvatar: false })
+      this.setData({
+        hasPendingAvatar: false,
+        lastAvatarFileId: nextAvatarFileId
+      })
       this.loadCurrentUser()
       toast({ title: '资料已更新', icon: 'success' })
     } catch (error) {
