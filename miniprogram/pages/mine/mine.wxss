@@ -15,12 +15,15 @@
   align-items: center;
 }
 
-.avatar-wrap {
+.avatar-btn {
   width: 88px;
   height: 88px;
   border-radius: 50%;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.68);
+  padding: 0;
+  border: none;
+  line-height: 88px;
 }
 
 .avatar {
@@ -39,22 +42,42 @@
   font-size: 28px;
 }
 
+.avatar-tip {
+  margin-top: 8px;
+  font-size: 11px;
+  color: #7f6f57;
+}
+
 .name-wrap {
   margin-top: 14px;
+  width: 100%;
+}
+
+.name-input {
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 0 12px;
   text-align: center;
-}
-
-.name {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 18px;
   color: #1f1f1f;
+  font-weight: 600;
 }
 
-.logout-btn {
-  margin-top: 22px;
+.save-btn {
+  margin-top: 16px;
   border-radius: 999px;
   background: #1f1f1f;
   color: #ffffff;
   font-size: 15px;
   border: none;
+}
+
+.logout-btn {
+  margin-top: 12px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #1f1f1f;
+  font-size: 15px;
+  border: 1px solid #e1d9c9;
 }

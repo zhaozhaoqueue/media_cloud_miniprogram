@@ -4,6 +4,7 @@ export const getHealth = () => http.get('/api/v1/health')
 
 export const authLogin = (data) => http.post('/api/v1/auth/login', data)
 export const updateMyProfile = (data) => http.patch('/api/v1/users/me', data)
+export const getMyAvatarUploadToken = (data) => http.post('/api/v1/users/me/avatar/upload-token', data)
 
 export const getNotes = (params = {}) => http.get('/api/v1/notes', params)
 export const createNote = (data) => http.post('/api/v1/notes', data)

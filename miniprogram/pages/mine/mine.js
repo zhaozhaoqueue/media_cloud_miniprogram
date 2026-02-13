@@ -1,18 +1,35 @@
-import { updateMyProfile } from '../../api/index'
+import { getMyAvatarUploadToken, updateMyProfile } from '../../api/index'
 import { clearToken } from '../../utils/auth'
 import { toast } from '../../utils/extendApi'
 import { getStorage, setStorage } from '../../utils/storage'
 
+const inferMimeType = (filePath = '') => {
+  const lower = String(filePath || '').toLowerCase()
+  if (lower.endsWith('.png')) return 'image/png'
+  if (lower.endsWith('.webp')) return 'image/webp'
+  if (lower.endsWith('.gif')) return 'image/gif'
+  return 'image/jpeg'
+}
+
+const fileNameFromPath = (filePath = '') => {
+  const parts = String(filePath || '').split('/')
+  return parts[parts.length - 1] || `avatar_${Date.now()}.jpg`
+}
+
 Page({
   data: {
-    updatingAvatar: false,
-    updatingName: false,
+    saving: false,
+    hasPendingAvatar: false,
     loggingOut: false,
     currentUser: {
       id: '',
       name: '用户',
       avatar: '',
       initial: '用'
+    },
+    form: {
+      name: '',
+      avatar: ''
     }
   },
   onShow() {
@@ -29,112 +46,143 @@ Page({
         name,
         avatar,
         initial: name.slice(0, 1).toUpperCase()
+      },
+      form: {
+        name,
+        avatar
       }
     })
   },
-  getWechatProfile() {
-    return new Promise((resolve, reject) => {
-      if (!wx.getUserProfile) {
-        reject(new Error('当前微信版本不支持'))
-        return
-      }
-      wx.getUserProfile({
-        desc: '用于更新头像和昵称',
-        lang: 'zh_CN',
-        success: (res) => {
-          const info = res?.userInfo || {}
-          resolve({
-            name: info.nickName || '',
-            avatar: info.avatarUrl || ''
-          })
-        },
-        fail: (error) => reject(error)
+  onNameInput(e) {
+    this.setData({
+      'form.name': e?.detail?.value || ''
+    })
+  },
+  onChooseAvatar(e) {
+    const avatarPath = String(e?.detail?.avatarUrl || '').trim()
+    if (!avatarPath) return
+    this.setData({
+      'form.avatar': avatarPath,
+      hasPendingAvatar: true
+    })
+  },
+  getFileSize(filePath) {
+    return new Promise((resolve) => {
+      wx.getFileInfo({
+        filePath,
+        success: (res) => resolve(Number(res?.size || 0)),
+        fail: () => resolve(0)
       })
     })
   },
-  async persistUserProfile(payload = {}, successTitle = '资料已更新') {
+  readFileBinary(filePath) {
+    return new Promise((resolve, reject) => {
+      wx.getFileSystemManager().readFile({
+        filePath,
+        success: ({ data }) => resolve(data),
+        fail: reject
+      })
+    })
+  },
+  uploadBySignedUrl(filePath, uploadInfo = {}) {
+    return this.readFileBinary(filePath).then((binary) => {
+      return new Promise((resolve, reject) => {
+        wx.request({
+          url: uploadInfo.uploadUrl,
+          method: uploadInfo.method || 'PUT',
+          header: uploadInfo.headers || {},
+          data: binary,
+          success: ({ statusCode }) => {
+            if (statusCode >= 200 && statusCode < 300) {
+              resolve(true)
+            } else {
+              reject(new Error(`upload status: ${statusCode}`))
+            }
+          },
+          fail: reject
+        })
+      })
+    })
+  },
+  async uploadPendingAvatarIfNeeded() {
+    if (!this.data.hasPendingAvatar) {
+      return {}
+    }
+    const avatarPath = String(this.data.form?.avatar || '').trim()
+    if (!avatarPath) {
+      return {}
+    }
+    if (/^https?:\/\//i.test(avatarPath)) {
+      return {
+        avatar: avatarPath
+      }
+    }
+
+    const name = fileNameFromPath(avatarPath)
+    const mimeType = inferMimeType(avatarPath)
+    const size = await this.getFileSize(avatarPath)
+    const tokenData = await getMyAvatarUploadToken({
+      name,
+      type: mimeType,
+      size
+    })
+    const uploadInfo = tokenData?.upload || tokenData || {}
+    if (!uploadInfo?.uploadUrl || !uploadInfo?.fileId) {
+      throw new Error('头像上传凭证无效')
+    }
+    await this.uploadBySignedUrl(avatarPath, uploadInfo)
+    return {
+      avatarFileId: uploadInfo.fileId,
+      avatar: uploadInfo.finalUrl || ''
+    }
+  },
+  async onSaveProfile() {
+    if (this.data.saving) return
     const oldUser = getStorage('user') || {}
-    const userId = String(this.data.currentUser?.id || oldUser?.id || '').trim()
-    if (!userId) {
-      toast({ title: '用户信息缺失，请重新登录', icon: 'none' })
-      return false
-    }
-    const data = await updateMyProfile({
-      userId,
-      ...payload
-    })
-    const responseUser = data?.user || data || {}
-    const nextName =
-      responseUser?.name ||
-      String(payload?.name || '').trim() ||
-      oldUser?.name ||
-      oldUser?.nickname ||
-      '用户'
-    const nextAvatar =
-      responseUser?.avatar ||
-      String(payload?.avatar || '').trim() ||
-      oldUser?.avatar ||
-      ''
-    const merged = {
-      ...oldUser,
-      ...responseUser,
-      id: responseUser?.id || userId,
-      name: nextName,
-      nickname: nextName,
-      avatar: nextAvatar
-    }
-    setStorage('user', merged)
-    this.loadCurrentUser()
-    toast({ title: successTitle, icon: 'success' })
-    return true
-  },
-  async onAvatarTap() {
-    if (this.data.updatingAvatar) return
-    this.setData({ updatingAvatar: true })
-    try {
-      const profile = await this.getWechatProfile()
-      const avatar = String(profile?.avatar || '').trim()
-      if (!avatar) {
-        toast({ title: '未获取到头像', icon: 'none' })
-        return
-      }
-      await this.persistUserProfile({ avatar }, '头像已更新')
-    } catch (error) {
-      const isCancel = String(error?.errMsg || '').includes('cancel')
-      if (!isCancel) {
-        toast({ title: '头像更新失败，请重试', icon: 'none' })
-      }
-    } finally {
-      this.setData({ updatingAvatar: false })
-    }
-  },
-  onNameTap() {
     const currentName = String(this.data.currentUser?.name || '').trim()
-    wx.showModal({
-      title: '修改昵称',
-      editable: true,
-      placeholderText: currentName || '请输入昵称',
-      success: ({ confirm, content }) => {
-        if (!confirm) return
-        const inputName = String(content || '').trim()
-        const nextName = inputName || currentName
-        if (!nextName) {
-          toast({ title: '昵称不能为空', icon: 'none' })
-          return
-        }
-        this.submitNameUpdate(nextName)
-      }
-    })
-  },
-  async submitNameUpdate(name) {
-    if (this.data.updatingName) return
-    this.setData({ updatingName: true })
+    const nextName = String(this.data.form?.name || '').trim()
+    const hasNameChange = !!nextName && nextName !== currentName
+    const hasAvatarChange = !!this.data.hasPendingAvatar
+
+    if (!hasNameChange && !hasAvatarChange) {
+      toast({ title: '资料无变化', icon: 'none' })
+      return
+    }
+
+    this.setData({ saving: true })
+    wx.showLoading({ title: '保存中' })
     try {
-      await this.persistUserProfile({ name }, '昵称已更新')
+      const payload = {}
+      if (hasNameChange) {
+        payload.name = nextName
+      }
+      const avatarPayload = await this.uploadPendingAvatarIfNeeded()
+      if (avatarPayload.avatarFileId) {
+        payload.avatarFileId = avatarPayload.avatarFileId
+      }
+      if (avatarPayload.avatar && !payload.avatarFileId) {
+        payload.avatar = avatarPayload.avatar
+      }
+
+      const data = await updateMyProfile(payload)
+      const responseUser = data?.user || data || {}
+      const merged = {
+        ...oldUser,
+        ...responseUser,
+        id: responseUser?.id || oldUser?.id || '',
+        name: responseUser?.name || nextName || oldUser?.name || oldUser?.nickname || '用户',
+        nickname: responseUser?.name || nextName || oldUser?.nickname || '用户',
+        avatar: responseUser?.avatar || avatarPayload?.avatar || oldUser?.avatar || ''
+      }
+      setStorage('user', merged)
+      this.setData({ hasPendingAvatar: false })
+      this.loadCurrentUser()
+      toast({ title: '资料已更新', icon: 'success' })
     } catch (error) {
-      toast({ title: error?.message || '昵称更新失败，请重试', icon: 'none' })
+      toast({ title: error?.message || '更新失败，请重试', icon: 'none' })
     } finally {
-      this.setData({ updatingName: false })
+      wx.hideLoading()
+      this.setData({ saving: false })
     }
   },
   onLogout() {
